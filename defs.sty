@@ -1,0 +1,126 @@
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[colorlinks=true,
+		raiselinks=true,
+		linkcolor=MidnightBlue,
+		citecolor=Mahogany,
+		urlcolor=ForestGreen,
+		pdfauthor={Karmvir Singh Phogat},
+		pdftitle={Discrete-time maximum principle on matrix Lie groups},
+		pdfkeywords={State constraints, discrete mechanics, Pontryagin's Maximum Principle},
+		pdfsubject={Technical Report},
+		plainpages=false]{hyperref}
+\usepackage{mathrsfs}        
+\usepackage{subfigure}
+\usepackage{cite}
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+\usepackage[retainorgcmds]{IEEEtrantools}
+\allowdisplaybreaks
+\setlength{\parskip}{1ex}
+\usepackage[symbol]{footmisc}
+\usepackage{pifont}
+\usepackage{multirow}
+\usepackage{empheq}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[squaren]{SIunits}
+\usepackage[latin1]{inputenc}
+\usepackage{footnote}
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{tikz,tikz-3dplot}
+\usetikzlibrary{shapes,arrows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usetikzlibrary{positioning}
+\usepackage{datatool,tikz,filecontents}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{thmtools, thm-restate}
+\usepackage{enumitem}
+\usepackage{dsfont}
+%\usepackage{graphics}
+%\usepackage{tikz}
+%======================================================
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{prop}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{xca}[theorem]{Exercise}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+%\theoremstyle{assumption}
+\newtheorem{assumption}[theorem]{Assumption}
+%\theoremstyle{fact}
+\newtheorem{fact}[theorem]{Fact}
+%\theoremstyle{claim}
+\newtheorem{claim}[theorem]{Claim}
+%\theoremstyle{corl}
+\newtheorem{corl}[theorem]{Corollary}
+%=================================================
+\numberwithin{equation}{section}
+
+%=================================================
+\newcommand{\J}{\boldsymbol{\operatorname{J}}}
+\DeclareMathOperator*{\minimize}{minimize}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator{\atan}{atan}
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\e}{e}
+\DeclareMathOperator{\logm}{logm}
+\DeclareMathOperator{\Ad}{Ad}
+\newcommand{\R}{\mathds{R}} %real numbers
+\newcommand{\N}{\mathds{N}} %natural numbers
+\renewcommand{\P}{\mathcal{P}}  %script P
+\newcommand{\ls}{\limsup}   %limsup
+\newcommand{\li}{\liminf}   %liminf
+\newcommand{\ol}{\overline}
+\newcommand{\defas}{\coloneqq}
+\newcommand{\nsp}{\kern-1em}
+\newcommand{\iso}{\ \raisebox{0.25ex}{\ensuremath{\stackrel{\sim}{\rule{8pt}{0.35pt}}}\ \,}}
+\newcommand{\lieg}{G}
+\newcommand{\liea}{\mathfrak{g}}
+\newcommand{\SO}[1]{\text{SO}(#1)}
+\newcommand{\so}[1]{\mathfrak{so}(#1)}
+%=========================================================
+\newcommand{\norm}[1]{\left\lVert{#1}\right\rVert} %norm
+\newcommand{\abs}[1]{\left\lvert{#1}\right\rvert} %absolute value
+\newcommand{\secref}[1]{\S\ref{#1}} % section ref
+\newcommand{\eqnref}[1]{(\ref{#1})} % equation ref
+\newcommand{\ip}[2]{\left\langle#1,#2\right\rangle} % Inner product
+\newcommand{\m}[1]{\( #1 \)}  % mathmode
+\newcommand{\rvec}[1]{\begin{pmatrix} #1^1 & #1^2 & #1^3\end{pmatrix}} % Row vector
+\newcommand{\op}[1]{\mathring{#1}}
+\newcommand{\ad}[1]{\Ad_{#1}}
+\newcommand{\cset}{\mathds{U}_t}
+\newcommand{\optraj}[1]{\op{\gamma}_{#1}}
+\newcommand{\ham}[1]{H^\nu \left(#1 \right)}
+\newcommand{\triv}[1]{T_{e}^{*} \Phi_{#1}}
+%
+%\newcommand{\hamvar}{\left( \tau,\zeta,\xi,q,x,u \right)}
+%\newcommand{\hamdef}{[N] \times \liea^* \times \left(\R^{n_x}\right)^* \times \lieg \times \R^{n_x} \times \R^{n_u}}
+%\newcommand{\hamdefs}{[N] \times \liea^* \times \left(\R^{n_x}\right)^* \times \lieg \times \lieg \times \R^{n_x} \times \R^{n_u}}
+\newcommand{\hamvar}{\left( \tau,\zeta,\xi,R_e,E,M \right)}
+\newcommand{\hamdef}{[N] \times \liea^* \times \liea^*  \times \lieg \times \lieg \times \R^{n_{M}}}
+\newcommand{\hamdefs}{[N] \times \liea^* \times \left(\R^{n_x}\right)^* \times \left(\R^{n_g}\right)^* \times \lieg \times \lieg \times \R^{n_x} \times \R^{n_u}}
+\newcommand{\ehamdef}{[N] \times \left(\R^{n_q}\right)^* \times \left(\R^{n_x}\right)^* \times \left(\R^{n_g}\right)^* \times \R^{n_q} \times \R^{n_x} \times \R^{n_u}}
+\newcommand{\eham}[1]{\tilde{H}^\nu \left(#1 \right)}
+\newcommand{\emy}{\rho}
+\newcommand{\emg}{\vartheta}
+\newcommand{\emb}{\varsigma}
+\newcommand{\eoptraj}[1]{\tilde{\gamma}_{#1}}
+\newcommand{\ornt}[1]{R_{#1}}
+\newcommand{\rot}[1]{F_{#1}}
+\newcommand{\vel}[1]{\omega_{#1}}
+\newcommand{\cntrl}[1]{u_{#1}}
+%==============================================================================
+

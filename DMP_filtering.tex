@@ -1,0 +1,331 @@
+\documentclass[12pt]{article} 
+%
+     % \usepackage{/Users/ravibanavar/PBMacBook_26_05_09/TEX_myhelp/macros}        
+       \usepackage{LGobservers_macros,defs} 					
+       \usepackage{epsfig} 
+         \usepackage{graphicx}
+         \usepackage{graphics}
+         \usepackage{latexsym} 
+         \usepackage{amsmath}
+         \usepackage{psfrag}
+         \usepackage{amsmath}
+         \usepackage{amssymb}
+         \usepackage{multicol}
+         \usepackage{cite}
+         \usepackage{url}
+         \usepackage{bm} % bold math
+         \usepackage{color} % change text color  
+         \usepackage{tcolorbox}
+%
+          \def\deff{\stackrel{\triangle}{=}} 
+%
+%       Page dimensions
+%
+     %\renewcommand{\baselinestretch}{1.2} 
+         \topmargin=-0.75in%-0.5in 
+      %\headheight=0pt 
+	%\headsep=0pt 
+	\textheight=9.5in 
+	%\textwidth=6.5in 
+	%\oddsidemargin=0pt 
+	%\pagestyle{plain} 
+	%\footskip=0.65in 
+% 
+
+\title{Discrete Filtering on Lie Groups using the Maximum Principle 
+\\ \small{Preliminary ideas}} 
+% 
+\author{ 
+%
+{Ravi N Banavar \thanks{Professor, Systems and Control
+Engineering, IIT Bombay}  \\
+(Collaborative work with Hiya Gada, Pieter van Goor, Robert Mahony )}
+}
+%
+%
+%\today
+\date{}
+\begin{document}
+\maketitle 
+% 
+\thispagestyle{empty} 
+%
+% 
+\textcolor{blue}{We formulate a candidate filtering problem in discrete time on the rotation group 
+$\SOthree$ using an optimal control framework 
+and propose a "Maximum Principle" approach to solve the problem.
+\\
+{\bf Aside}: I request your patience with my notation. For the past 15 years I am used to seeing the 
+"hat" for skew-symmetrization; so I resort to the subscript $e$ to indicate an "estimate." We could change 
+this later if it bothers the observer-community folks !}
+%
+
+ The governing kinematic equations of motion are
+ %
+ 	\begin{align}
+		R_{k+1} = R_k \exp (\hOmega{}_k T)
+	\end{align}
+ %
+ where $\hOmega{}_k$ is the angular velocity at the $k$th instant and $T$ is the sampling interval.
+A measurement of the direction of an inertial object $\eta \in \Stwo$, expressed in the body-frame of the robot 
+ or satellite as
+ %
+ 	\begin{align}
+		y_k = R_k^T \eta
+	\end{align}
+ %
+The noise processes are yet to be included in the picture; for now we treat the problem as that 
+of an observer design. The observed state at stage $k$ is denoted by $R_{e_k}$ and the observer
+is assumed to have a structure
+%
+ 	\begin{align}
+		R_{e_{k+1}} = R_{e_{k}} \exp (( \hOmega{} _k + \hM{}_k)T)
+	\end{align}
+ %%
+where $\{ \hM_k : k = 0, \ldots, N-1\} $ is a sequence in $\sothree$ and $\hM{}_p$ is a 
+function of $ \{ y_k : k = 0, \ldots, p\} $.
+
+Define the error as $E_k \deff R_{e_k} R_{k}^T$ \textcolor{blue}{(spatial error ?)}. 
+The error dynamics are then $
+		E_{k+1} = [Ad_{R_{e_k}}   {\exp(\hM_k^T) } ] E_k
+$
+ %%
+The optimal 
+observer design problem would be:
+ %
+ 	\begin{align}
+		\min_{\hM_k: k=0, 1, \ldots, N - 1} \sum_{i=0}^{N} \trace{(E_i^T - I)}
+		\nonumber \\
+		\hbox{subject to $E_{k+1} = Ad_{R_{e_k}}   \exp(\hM_k^T) E_k$}
+		\nonumber \\
+		R_{e_{k+1}} = R_{e_{k}} \exp (( \hOmega{} _k + \hM{}_k)T)
+		\nonumber \\
+		y_0, y_1, \ldots, y_{N-1} \quad \hbox{given}
+		\nonumber \\
+		\hOmega{}_0, \hOmega{}_1, \ldots, \hOmega{}_{N-1} \quad \hbox{given}
+	\end{align}
+ %
+\textcolor{blue}{Points to ponder: 
+\been
+%
+	\item How do we bring in the dependance of $\hM_k$ on the measurements ?
+	%
+	Could we do it as follows ? 
+	%
+ 	\begin{align}
+		M_k = 	L_k (y_k - y_{e_k}) \quad L_k \in \R^{3 \times 3}
+	\end{align}
+ %%
+	\item After addressing this problem, we could move on to the visual SLAM problem.
+%
+\een}
+%
+We follow \cite{phogat_DMP}.
+%
+\begin{assumption}
+\label{ass:asm}
+The following assumptions on the various maps are enforced throughout this article:
+%
+\begin{enumerate}[label=\textup{(A-\roman*)}, leftmargin=*, widest=b, align=left]
+%
+\item \label{asm:1} All maps are smooth.
+%
+\item \label{asm:2} There exists an open set \m{\mathcal{O} \subset \liea} such that: 
+\begin{enumerate}[label=\textup{(\alph*)}]
+\item the exponential map \m{\e:\mathcal{O} \rightarrow \e(\mathcal{O}) \subset \lieg} is a diffeomorphism, and 
+\item the integration step \m{s_t} \clb{is in} \m{\e(\mathcal{O}) \text{\; for all\;} t;} see Figure \ref{fig:para}.
+\end{enumerate}
+\item \label{asm:3} The set of feasible control actions \m{\cset} 
+(here, the innovation $M_t$) is convex for each \m{t=0,\ldots,N-1}.
+%
+\end{enumerate} 
+\end{assumption}
+ 
+   Assumption \ref{ass:asm} is crucial, as we shall see, in order to ensure the existence of multipliers that appear in the necessary optimality conditions for the optimal control problem. In particular, \ref{asm:1} ensures the existence of a convex approximation (known as a tent \cite{tent}) of the feasible region in a neighborhood of an optimal triple \m{(\op{R}_{e}_t,\op{E}_t,\op{M}_t)}. \ref{asm:2} gives the local representation of admissible trajectories \m{\left \{\left( R_{e_{t}},E_t \right)\right\}_{t=0}^{N} \in \mathcal{A}} in a Euclidean space. This assumption naturally holds in situations in which the discrete-time dynamics are derived from an underlying continuous-time system, thereby transforming our optimal control problem to a Euclidean space; first order necessary conditions for optimality are thereafter obtained using Boltyanskii's method of tents \cite{tent}. These first order necessary conditions are interpreted in terms of the (global) configuration space variables.  \ref{asm:3} leads to a pointwise non-positive condition of the gradient of the Hamiltonian over the set of feasible control actions, which is explained in detail in \secref{sec:proofDMP}.
+%
+\begin{equation}
+\label{eq:sopt}
+\begin{aligned}
+\minimize_{\left\{M_t\right\}_{k=0}^{N-1}} &&& \mathscr{J} \left(R_e,E,,M\right) = \sum_{t=0}^{N-1} 
+\trace \left(E_k - I \right) + \trace \left(E_N - I \right) \\
+\text{subject to} &&&
+\begin{cases}
+\begin{cases} R_{e_{k+1}}^T R_{e_{k}} =  \exp( (\hat{\Omega}_k +  \hat{M}_k) T)  ,\\
+E_{k+1} E_{k}^T = R_{e_{k}}  \exp(\hat{M}_k T) R_{e_{k}}^T , \\
+ \end{cases} 
+ \text{for each\;} k =0,\ldots,N-1, \\
+ \text{under the above assumption \ref{ass:asm}.}
+ \end{cases} 
+\end{aligned} 
+\end{equation}
+%
+%
+\textcolor{red}{Once again, a note on the notation: 
+\bei
+%
+\item To be consistent with our Automatica paper on the DMP, optimal quantities have a circle on top of them.
+%
+\item $G$ is the matrix Lie group, $\liea$ is the Lie algebra and $\liea^*$ is the dual.
+%
+\item The superscript on the Hamiltonian $\nu$ indicates the "abnormal" multiplier.
+%
+\item The states are $R_e$ (the estimate) and $E$ (the error in the estimate).
+%
+\item The adjoint variables are $\zeta$ (corresponding to the estimator dynamics) and $\xi$ 
+(corresponding to the error dynamics).
+%
+\iten $M$ (the innovations) is the "control."
+%
+\ei
+%
+}
+%
+\textcolor{blue}{Our main result would be on the lines}
+%
+\begin{theorem}[{{\textcolor{blue}{Discrete-time PMP for a Lie Group Estimator}}}]
+\label{thm:DMP}
+Let \m{\{\op{M}_t\}_{t=0}^{N-1}} be an innovations process that solves the problem \eqref{eq:sopt} with \m{\{\left(\op{R_e}_t,\op{E}_t \right)\}_{t=0}^N} the corresponding state trajectory. Define the Hamiltonian 
+\begin{align}\label{def:Hamiltonian}
+& \hamdef \ni\hamvar \mapsto \nonumber \\
+& \ham{\hamvar} \defas\nu \trace{\left(E_\tau - I \right)} + \left\langle\zeta,
+\hat{\Omega}_\tau +  \hat{M}_\tau \right\rangle_{\liea} \nonumber\\
+&\phantom{\ham{\hamvar} \defas} + \left\langle \xi,  R_{e_{\tau}} \hat{\Omega}_\tau 
+R_{e_{\tau}}^T \rangle_{\liea}   \in \R, 
+\end{align}
+for \m{\nu \in \R.}
+There exist 
+\begin{itemize}[ leftmargin=*]
+\item an adjoint trajectory \m{\left\{ \left(\zeta^t,\xi^t \right)\right\}_{t=0}^{N-1} \subset \liea^*\times \liea^*  }
+and
+\item a scalar \m{\nu \in \{-1, 0\} }
+\end{itemize}
+ such that, with \[\optraj{t}  \defas \left(t,\zeta^t,\xi^t,\op{R}_{e}_t,\op{E}_t, \op{M}_t \right),\] the following hold:
+	\begin{enumerate}[leftmargin=*, label={\rm (MP-\roman*)}, widest=iii, align=left]
+\item \label{main:dyn} state and adjoint system dynamics
+\begin{align*}
+state & \begin{cases}
+\op{R}_{e_{t+1}}^T \op{R}_{e_{t}}  = {\mathcal{D}_{\zeta} \ham{\left(\optraj{t} \right)}},\\
+\op{E}_{t+1} \op{E}_{t}^T = \mathcal{D}_{\xi} \ham{\left(\optraj{t} \right)}, 
+\end{cases}\\
+adjoint & \begin{cases}
+\zeta^{t-1} = \\
+%\ad{\e^{-\mathcal{D}_{\zeta} \ham{\left(\optraj{t} \right)}}}^* \zeta^{t} \\
+%\phantom{\zeta^{t-1} }+\triv{\op{q}_t} \Big(\mathcal{D}_{q} \ham{\left(\optraj{t} \right)} \big)\\
+%\phantom{\zeta^{t-1} }+\triv{\op{q}_t} \Big(\mu^t \mathcal{D}_{q} g_{t}\left(\op{q}_t,\op{x}_t \right) \Big),\\
+\xi^{t-1} = 
+%\mathcal{D}_{x} \ham{\left(\optraj{t} \right)} + \mu^t \mathcal{D}_{x} g_{t}\left(\op{q}_t,\op{x}_t \right),
+\end{cases}
+\end{align*}
+\item \label{main:trans} transversality conditions
+\begin{align*}
+\zeta^{N-1}& = 
+%\triv{\op{q}_N}\Big(\nu \mathcal{D}_{q} c_N \left(\op{q}_N,\op{x}_N \right) \Big) \\
+%&+ \triv{\op{q}_N}\Big( \mu^N \mathcal{D}_{q} g_N \left(\op{q}_N,\op{x}_N \right)\Big),\\
+%\xi^{N-1} = & \nu \mathcal{D}_{x} c_N \left(\op{q}_N,\op{x}_N \right) + \mu^N \mathcal{D}_{x} g_N \left(\op{q}%_N,\op{x}_N \right),
+\end{align*}
+\item \label{main:hmax} Hamiltonian non-positive gradient condition \label{it:hamnpg}
+\[\ip{\mathcal{D}_{M} \ham{\left(\optraj{t}\right)}}{w-\op{M}_t} \leq 0 \quad \text{for all} \quad w \in \cset,\]
+\item \label{main:ntriv} non-triviality condition \\
+adjoint variables \m{\left\{\left(\zeta^t,\xi^t\right)\right\}_{t=0}^{N-1}}and the scalar \m{\nu} do not simultaneously vanish.
+\end{enumerate}
+\end{theorem}
+\bibliography{ref} 
+\bibliographystyle{siam} 
+%
+% 
+\end{document} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%
+ \begin{equation}
+\label{eq:sopt}
+\begin{aligned}
+\minimize_{\left\{u_t\right\}_{t=0}^{N-1}} &&& \mathscr{J} \left(q,x,u\right) = \sum_{t=0}^{N-1} c_t \left(q_t,x_t,u_t\right) + c_N \left(q_N,x_N\right)\\
+\text{subject to} &&&
+\begin{cases}
+\begin{cases} q_{t+1} = q_t s_t \left(q_t,x_t\right),\\
+ x_{t+1} = f_t \left(q_t,x_t,u_t\right), \\
+ u_t \in \cset,
+ \end{cases} 
+ \text{for each\;} t =0,\ldots,N-1, \\
+ g_t \left(q_t,x_t\right) \leq 0 \quad \text{for each\;} t =0,\ldots,N, \\
+  b\left(q_0,x_0,q_N,x_N\right)=0,\\
+ \text{under Assumption \ref{ass:asm}.}
+ \end{cases} 
+\end{aligned} 
+\end{equation}
+Our main result is the following:
+\begin{theorem}[{{Discrete-time PMP}}]
+\label{thm:DMP}
+Let \m{\{\op{u}_t\}_{t=0}^{N-1}} be an optimal controller that solves the problem \eqref{eq:sopt} with \m{\{\left(\op{q}_t,\op{x}_t \right)\}_{t=0}^N} the corresponding state trajectory. Define the Hamiltonian 
+\begin{align}\label{def:Hamiltonian}
+& \hamdef \ni\hamvar \mapsto \nonumber \\
+& \ham{\hamvar} \defas\nu c_\tau \left(q,x,u\right) + \left\langle\zeta,\e^{-1}\left(s_\tau \left(q,x\right)\right)\right\rangle_{\liea} \nonumber\\
+&\phantom{\ham{\hamvar} \defas} + \left\langle \xi,f_\tau \left(q,x,u\right) \right\rangle  \in \R, 
+\end{align}
+for \m{\nu \in \R.}
+There exist 
+\begin{itemize}[ leftmargin=*]
+\item an adjoint trajectory \m{\left\{ \left(\zeta^t,\xi^t \right)\right\}_{t=0}^{N-1} \subset \liea^*\times \left(\R^{\nox}\right)^*  }, covectors \m{ \mu^t \in \left(\R^{\nog{t}}\right)^*} for \m{t=1,\ldots, N,} and
+\item a scalar \m{\nu \in \{-1, 0\} }
+\end{itemize}
+ such that, with \[\optraj{t}  \defas \left(t,\zeta^t,\xi^t,\op{q}_t,\op{x}_t, \op{u}_t \right),\] the following hold:
+	\begin{enumerate}[leftmargin=*, label={\rm (MP-\roman*)}, widest=iii, align=left]
+\item \label{main:dyn} state and adjoint system dynamics
+\begin{align*}
+state & \begin{cases}
+\op{q}_{t+1} = \op{q}_t \e^{\mathcal{D}_{\zeta} \ham{\left(\optraj{t} \right)}},\\
+\op{x}_{t+1} = \mathcal{D}_{\xi} \ham{\left(\optraj{t} \right)}, 
+\end{cases}\\
+adjoint & \begin{cases}
+\zeta^{t-1} = \ad{\e^{-\mathcal{D}_{\zeta} \ham{\left(\optraj{t} \right)}}}^* \zeta^{t} \\
+\phantom{\zeta^{t-1} }+\triv{\op{q}_t} \Big(\mathcal{D}_{q} \ham{\left(\optraj{t} \right)} \big)\\
+\phantom{\zeta^{t-1} }+\triv{\op{q}_t} \Big(\mu^t \mathcal{D}_{q} g_{t}\left(\op{q}_t,\op{x}_t \right) \Big),\\
+\xi^{t-1} = \mathcal{D}_{x} \ham{\left(\optraj{t} \right)} + \mu^t \mathcal{D}_{x} g_{t}\left(\op{q}_t,\op{x}_t \right),
+\end{cases}
+\end{align*}
+\item \label{main:trans} transversality conditions
+\begin{align*}
+\zeta^{N-1}& = \triv{\op{q}_N}\Big(\nu \mathcal{D}_{q} c_N \left(\op{q}_N,\op{x}_N \right) \Big) \\
+&+ \triv{\op{q}_N}\Big( \mu^N \mathcal{D}_{q} g_N \left(\op{q}_N,\op{x}_N \right)\Big),\\
+\xi^{N-1} = & \nu \mathcal{D}_{x} c_N \left(\op{q}_N,\op{x}_N \right) + \mu^N \mathcal{D}_{x} g_N \left(\op{q}_N,\op{x}_N \right),
+\end{align*}
+\item \label{main:hmax} Hamiltonian non-positive gradient condition \label{it:hamnpg}
+\[\ip{\mathcal{D}_{u} \ham{\left(\optraj{t}\right)}}{w-\op{u}_t} \leq 0 \quad \text{for all} \quad w \in \cset,\]
+\item \label{main:comp} complementary slackness conditions
+\begin{align*}
+\mu^{t}_j g^j_{t}(\op{q}_t,\op{x}_t) = 0 \quad &\text{for all} \quad j=1,\ldots,\nog{t},\\
+& \text{and} \quad t=1,\ldots,N, 
+\end{align*}
+\item \label{main:npos} non-positivity condition
+\[ \mu^t \leq 0 \quad \text{for all}\quad t=1,\ldots,N,\]
+\item \label{main:ntriv} non-triviality condition \\
+adjoint variables \m{\left\{\left(\zeta^t,\xi^t\right)\right\}_{t=0}^{N-1}}, covectors \m{\left\{ \mu^t  \right\}_{t=1}^{N}}, and the scalar \m{\nu} do not simultaneously vanish.
+\end{enumerate}
+\end{theorem}
+We present a proof of Theorem \ref{thm:DMP} in \secref{sec:proofDMP}. This discrete-time PMP on matrix Lie groups is a generalization of the standard discrete-time PMP on Euclidean spaces since the variable \m{q} in the combined state \m{\left(q,x\right)} evolves on the Lie group \(G\); consequently, the assertions of Theorem \ref{thm:DMP} appear different from the discrete-time PMP on Euclidean spaces \cite{tent}. Let us highlight some of its features: 
+\begin{itemize}[leftmargin=*]
+	\item The adjoint system of the discrete-time PMP on matrix Lie groups corresponding to the states \m{q} evolves on the dual \m{\liea^*} of the Lie algebra \m{\liea} despite the fact that the state dynamics \eqref{eq:sys} evolves on the Lie group \m{\lieg}. 
+
+\item The adjoint system is linear in the adjoint variables \m{\left(\zeta^t, \xi^t \right)} because the maps \m{\liea^* \ni \zeta^t \mapsto \ad{\e^{-\mathcal{D}_{\zeta} \ham{\left(\optraj{t} \right)}}}^*\left( \zeta^t \right) \in \liea^*} and \m{T^*_q G \ni \mathcal{D}_{q} \ham{\left(\optraj{t} \right)} \mapsto \triv{\op{q}_t} \Bigl(\mathcal{D}_{q} \ham{\left(\optraj{t} \right)}\Bigr)} are linear for all \m{t.}
+
+\item The assertions the ``Hamiltonian non-positive gradient condition'', the ``complementary slackness condition'', the ``non-positivity condition'', and the ``non-triviality condition'' are identical to the discrete-time PMP on Euclidean spaces. 
+\end{itemize}
+\begin{remark}
+\begin{enumerate}[label=(\alph*), leftmargin=*]
+\item Assumption \ref{ass:asm} is not the most general set of hypotheses for which we can derive a discrete-time PMP on matrix Lie groups. Continuous differentiability of  the functions \m{s_t, f_t, g_t, c_t,c_N} suffices for Theorem \ref{thm:DMP} to hold. 
+
+\item Due to certain fundamental differences between discrete-time and continuous-time optimal control problems, the standard Hamiltonian maximization condition in continuous time \cite[Theorem MP on p.\ 14]{Sussmann_copmp} does not carry over to the discrete-time version. For a detailed discussion, see e.g., \cite[p.\ 199]{pshenichnyi1971necessary}. We do, however, get a weaker version contained in assertion \ref{it:hamnpg} of Theorem \ref{thm:DMP}. If the Hamiltonian is concave in control \m{u} over the set of feasible control actions \m{\cset} and \m{\cset} is compact for each \m{t}, in addition to \ref{asm:3}, the assertion can be strengthened to 
+\begin{align*}
+\ham{\left(t,\zeta^t,\xi^t, \op{q}_t,\op{x}_t, \op{u}_t\right)} = \underset{w \in \cset}{\max} \quad \ham{\left(t,\zeta^t,\xi^t, \op{q}_t,\op{x}_t, w\right)}.
+\end{align*}
+\end{enumerate}
+\end{remark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+
+

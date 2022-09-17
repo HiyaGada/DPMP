@@ -1,0 +1,152 @@
+\documentclass[12pt]{article}
+
+%
+     % \usepackage{/Users/ravibanavar/PBMacBook_26_05_09/TEX_myhelp/macros}        
+       \usepackage{LGobservers_macros,defs} 					
+       \usepackage{epsfig} 
+         \usepackage{graphicx}
+         \usepackage{graphics}
+         \usepackage{latexsym} 
+         \usepackage{amsmath}
+         \usepackage{psfrag}
+         \usepackage{amsmath}
+         \usepackage{amssymb}
+         \usepackage{multicol}
+         \usepackage{cite}
+         \usepackage{url}
+         \usepackage{bm} % bold math
+         \usepackage{color} % change text color  
+         \usepackage{tcolorbox}
+%
+          \def\deff{\stackrel{\triangle}{=}} 
+%
+%       Page dimensions
+%
+     %\renewcommand{\baselinestretch}{1.2} 
+         \topmargin=-0.75in%-0.5in 
+      %\headheight=0pt 
+	%\headsep=0pt 
+	\textheight=9.5in 
+	%\textwidth=6.5in 
+	%\oddsidemargin=0pt 
+	%\pagestyle{plain} 
+	%\footskip=0.65in 
+% 
+
+\title{Discrete Filtering on Lie Groups using the Maximum Principle
+\\ \small{Problem Formulation}}
+\author{Ravi N. Banavar, Hiya Gada}
+\date{August 2022}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} 
+
+We formulate a candidate filtering problem in discrete time on the rotation group 
+$\SOthree$ using an optimal control framework 
+and propose a "Maximum Principle" approach to solve the problem.
+
+%\textcolor{red}{Are we also estimating the landmark positions? Are we considering landmarks on a sphere $\Stwo$? Yes, we are. Should we include the error in measurements in the objective?}
+
+
+% Problem formulation includes:
+% 1) Equations of system
+% 2) Measurement
+% 3) Error definition and dynamics
+% 4) Estimate dependence on measurements
+% 5) Objective function 
+% 6) Something that brings in measurement estimation
+
+\section{Equations of motion}
+The governing kinematic equations of motion are
+    \begin{align}
+		R_{k+1} = R_k \exp (\hOmega{}_k T)
+	\end{align}
+ where $\hOmega{}_k$ is the angular velocity at the $k$th instant and $T$ is the sampling interval. 
+
+\section{Measurement}
+A measurement of the direction of an inertial object $\eta^i \in \Stwo$, where $i = 1, \dots, p$, is expressed in the body-frame of the robot as
+ 	\begin{align}
+		y_k^i = R_k^T \eta^i
+	\end{align}
+
+\section{Observer Design}
+The observed state at stage $k$ is denoted by $R_{e_k}$ and the observer
+is assumed to have a structure
+%
+ 	\begin{align}
+		R_{e_{k+1}} &= R_{e_{k}} \exp (( \hOmega{} _k + \hM{}_k)T)\\
+		R_{e_0} &= I_{3}
+	\end{align}
+ %%
+where $\{ \hM_k : k = 0, \ldots, N-1\} $ is a sequence in $\sothree$ and further $\hM{}_l$ is a 
+causal function of $ \{ y_k^i : k = 0, \ldots, l \text{ and } i = 1, \dots, p\} $.
+
+\section{Error dynamics}
+Define the error as,
+\begin{align}
+    E_k \deff R_{e_k} R_{k}^\top
+\end{align}
+
+The error dynamics are then,
+\begin{align}
+    E_{k+1} = \Ad_{R_{e_k}}   {\exp({\hM}_{k} T) }  E_k
+\end{align}
+
+\section{Dependence of $\hM_{k}$ on measurements}
+Let there be a linear dependence on the measurements taken till the $k_{th}$ instant.
+\begin{align}
+    M_{k} = L_k(y_k - y_{e_k}), \;\; L_k \in \mathbb{R}^{3 \times 3p}
+\end{align}
+where $y_k$ and $y_{e_k}$ is a concatenation of all $y_k^i$,
+\begin{align}
+    y_k = \begin{bmatrix}
+    y_k^1 \\
+    y_k^2 \\
+    \vdots \\
+    y_k^p
+    \end{bmatrix}, \;\; y_{e_k} = \begin{bmatrix}
+    y_{e_k}^1 \\
+    y_{e_k}^2 \\
+    \vdots \\
+    y_{e_k}^p
+    \end{bmatrix}
+\end{align}
+The estimated measurement comes from the equation,
+\begin{align}
+    y_{e_k}^i = R_{e_k}^\top \eta^i
+\end{align}
+
+\section{Objective function}
+
+The optimal observer problem would beas follows,
+\begin{align*}
+    \min_{M_k: k=0, 1, \ldots, N - 1} &\sum_{i=0}^{N} \trace{(E_i - I)}
+	\nonumber \\
+	\hbox{subject to } E_{k+1} &= \Ad_{R_{e_k}}   {\exp({\hM}_{k} T) }  E_k,
+	\nonumber \\ 
+	R_{e_{k+1}} &= R_{e_k} \exp (( \hOmega{} _k + \hM{}_k)T),
+	\nonumber \\
+	M_k & \in \mathbb{R}^{3\times3}, \;\; \forall \;\; k \in \{0, \cdots, N-1\}\\
+	\hbox{\color{red}{How to }} & \hbox{\color{red}{define initial conditions?}}\\
+	y_0, & y_1, \ldots, y_{N-1} \quad \hbox{given}
+	\nonumber \\
+	\hOmega{}_0, & \hOmega{}_1, \ldots, \hOmega{}_{N-1} \quad \hbox{given}
+\end{align*}
+
+\color{red}{We have a serious problem with boundary conditions. As this is an estimation problem we don't have knowledge of the true robot pose $R_k$. We cannot put a user defined intial estimate of $R_{e_k}$ and $E_k$ together as this will fix the true robot pose $R_k$ (which we have no knowledge of). We can only fix one of the variables. Can we solve this boundary value problem? How do we define final conditions?}
+
+\color{purple}{Maybe we can define $R_{e_0}$ and $E_N$ (as we expect it to be 0 or close to 0 at the last time step)? Should we use "sweeping method"? }
+
+% REFER
+% multiple shooting methods, psuedo spectral methods, bryson and ho (Sweeping method)
+
+\section{Discrete-time PMP}
+
+Define the Hamiltonian,
+\begin{align*}
+    H^\nu(k, \zeta, R_{e}, E, M) &= \nu(\trace{(E - I)}) + \langle \zeta, \exp{}^{-1}() \rangle_{\mathfrak{g}} 
+\end{align*}
+
+\end{document}
